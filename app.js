@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
 const { buildSchema } = require('graphql');
+const mongoose = require('mongoose');
 
+const Event = require('./models/event');
 const app = express();
 
-const events = [];
 
 app.use(bodyParser.json());
 
@@ -42,22 +43,54 @@ app.use('/graphql', graphqlHTTP({
     rootValue: { //resolver functions
         //resolvers & commands should have same name
         events: () => {
-            return events;
+            return Event.find().then(
+                (events) => {
+                    return events.map(event => {
+                        return { ...event._doc, _id: event.id };
+                    });
+                }).catch(
+                    (err) => {
+                        console.log(err);
+                        throw err;
+                    }
+                )
+
         },
         createEvent: (args) => {
             const input = args.eventInput
-            const event = {
-                _id: Math.random().toString(),
+            const event = new Event({
                 title: input.title,
                 description: input.description,
                 price: +input.price,
-                date: new Date().toISOString()
-            }
-            events.push(event);
-            return event;
+                date: new Date(input.date)
+            })
+            return event
+                .save()
+                .then(
+                    event => {
+                        console.log(event)
+                        return { ...event._doc, _id: event.id };
+                    }
+                ).catch(
+                    (err) => {
+                        console.log(err);
+                        throw err;
+                    }
+                );
         }
     },
     graphiql: true
 }))
 
-app.listen(3000);
+mongoose.connect(`mongodb+srv://bono-admin:${process.env.MONGO_PASSWORD
+    }@cluster0.k21zw.mongodb.net/${process.env.MONGO_DB
+    }?retryWrites=true&w=majority`).then(
+        () => {
+            app.listen(3000);
+        }
+    ).catch(
+        (err) => {
+            console.log(err)
+        }
+    )
+
