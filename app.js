@@ -16,7 +16,8 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }))
 
-mongoose.connect(`mongodb+srv://bono-admin:${process.env.MONGO_PASSWORD
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER
+    }:${process.env.MONGO_PASSWORD
     }@cluster0.k21zw.mongodb.net/${process.env.MONGO_DB
     }?retryWrites=true&w=majority`).then(
         () => {
