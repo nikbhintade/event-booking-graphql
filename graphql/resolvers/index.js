@@ -1,7 +1,21 @@
 const bcrypt = require('bcryptjs');
 
+const Booking = require('../../models/booking');
 const Event = require('../../models/event');
 const User = require('../../models/user');
+
+const singleEvent = async eventId => {
+    try {
+        const event = await Event.findById(eventId).exec();
+        return {
+            ...event._doc,
+            _id: event.id,
+            creator: user.bind(this, event.creator)
+        }
+    } catch (err) {
+        throw err;
+    }
+}
 
 const events = async eventIds => {
     try {
@@ -35,6 +49,24 @@ const user = async userId => {
 
 module.exports = { //resolver functions
     //resolvers & commands should have same name
+    bookings: async () => {
+        try {
+            const bookings = await Booking.find().exec();
+            return bookings.map(booking => {
+                return {
+                    ...booking._doc,
+                    _id: booking.id,
+                    user: user.bind(this, booking._doc.user),
+                    event: singleEvent.bind(this, booking._doc.event),
+                    createdAt: new Date(booking._doc.createdAt).toISOString(),
+                    updatedAt: new Date(booking._doc.updatedAt).toISOString(),
+                }
+            })
+        } catch (err) {
+            throw err;
+        }
+    },
+
     events: async () => {
         try {
             const events = await Event.find().exec();
@@ -59,6 +91,24 @@ module.exports = { //resolver functions
             throw err;
         }
 
+    },
+
+    bookEvent: async (args) => {
+        const fetchedEvent = await Event.findOne({ _id: args.eventId }).exec();
+
+        const booking = new Booking({
+            user: '5fb92769b1f6d308e8c49c0c',
+            event: fetchedEvent
+        });
+        const result = await booking.save();
+        return {
+            ...result._doc,
+            _id: result.id,
+            user: user.bind(this, booking._doc.user),
+            event: singleEvent.bind(this, booking._doc.event),
+            createdAt: new Date(result._doc.createdAt).toISOString(),
+            updatedAt: new Date(result._doc.updatedAt).toISOString(),
+        }
     },
 
     createEvent: async (args) => {
