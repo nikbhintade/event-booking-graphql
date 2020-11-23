@@ -111,6 +111,23 @@ module.exports = { //resolver functions
         }
     },
 
+    cancelBooking: async (args) => {
+        try {
+            const booking = await Booking.findById(args.bookingId).populate('event');
+            console.log(booking.event._doc);
+            const event = {
+                ...booking.event._doc,
+
+                creator: user.bind(this, booking.event._doc.creator)
+            };
+            console.log(event)
+            await Booking.deleteOne({ _id: args.bookingId }).exec();
+            return event;
+        } catch (err) {
+            throw err;
+        }
+    },
+
     createEvent: async (args) => {
         const input = args.eventInput
         const event = new Event({
