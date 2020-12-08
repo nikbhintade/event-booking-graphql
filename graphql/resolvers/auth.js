@@ -36,11 +36,19 @@ module.exports = { //resolver functions
         if (!isEqual) {
             throw new Error('Password is incorrect.')
         }
-        const token = jwt.sign({ userId: (await user).id, email: user.email }, 'somekeytoauthenticate', {
+        const token = jwt.sign({ userId: user.id, email: user.email }, 'somekeytoauthenticate', {
             expiresIn: '1h'
         });
+        console.log("this is token:\n", token)
+        let decodedToken;
+        try {
+            decodedToken = jwt.verify(token, 'somekeytoauthenticate');
+        } catch (err) {
+            console.log('failed')
+        }
+        console.log('this is decoded token:\n', decodedToken)
         return {
-            userId: (await user).id,
+            userId: user.id,
             token: token,
             tokenExpiration: 1
         };
