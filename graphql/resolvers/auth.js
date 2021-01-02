@@ -19,7 +19,7 @@ module.exports = { //resolver functions
                 password: hashPassword
             })
             const result = await user.save();
-
+            console.log('New user is created');
             return { ...result._doc, password: null, _id: result.id }
         } catch (err) {
             throw err;
