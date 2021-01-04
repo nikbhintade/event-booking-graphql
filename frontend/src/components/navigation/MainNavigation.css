@@ -1,4 +1,4 @@
-.main-navigation{
+.main-navigation {
     position: fixed;
     left: 0;
     top: 0;
@@ -6,37 +6,53 @@
     height: 3.5rem;
     background: #01d1d1;
     padding: 0 1rem;
+    background: #5101d1;
+    padding: 0 2rem;
     display: flex;
     align-items: center;
-}
-
-.main-navigation__logo h1{
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  
+  .main-navigation__logo h1 {
     margin: 0;
     font-size: 1.5rem;
-}
-
-.main-navigation__item {
-    margin: 1.5rem;
-    padding: 0;
-    list-style: none;
-}
-.main-navigation__item ul {
+    color: #dfcefc;
+  }
+  
+  .main-navigation__item {
+    margin-left: 1.5rem;
+  }
+  .main-navigation__item ul {
     display: flex;
     list-style: none;
     padding: 0;
     margin: 0;
-}
-.main-navigation__item li {
+    align-items: center;
+  }
+  .main-navigation__item li {
     margin: 0 1rem;
-}
-
-.main-navigation__item a {
+  }
+  
+  .main-navigation__item a,
+  .main-navigation__item button {
     text-decoration: none;
-    color: #000000;
-}
-
-.main-navigation__item a:hover,
-.main-navigation__item a:active,
-.main-navigation__item a.active {
-    color: #f8e264;
-}
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border: none;
+    font: inherit;
+    background: transparent;
+    cursor: pointer;
+    margin: 0;
+  }
+  
+  .main-navigation__item a:hover,
+  .main-navigation__item a:active,
+  .main-navigation__item a.active,
+  .main-navigation__item button:active,
+  .main-navigation__item button:hover {
+      color: #fdefa0;
+      background: #ffffff;
+      color: #5101d1;
+      border-radius: 5px;
+  }
