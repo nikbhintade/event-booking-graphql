@@ -21,6 +21,7 @@ export class Events extends Component {
         this.priceRef = React.createRef();
         this.dateRef = React.createRef();
         this.descriptionRef = React.createRef();
+        this.isActive = true;
     }
 
     componentDidMount() {
@@ -148,15 +149,19 @@ export class Events extends Component {
             }).then(resData => {
                 console.log(resData);
                 const events = resData.data.events;
-                this.setState({
-                    events: events,
-                    isLoading: false
-                })
+                if (this.isActive) {
+                    this.setState({
+                        events: events,
+                        isLoading: false
+                    })
+                }
             }).catch(err => {
                 console.log(err);
-                this.setState({
-                    isLoading: true
-                })
+                if (this.isActive) {
+                    this.setState({
+                        isLoading: true
+                    })
+                }
             })
     }
 
@@ -170,6 +175,50 @@ export class Events extends Component {
     }
 
     bookEventHandler = () => {
+        if (!this.context.token) {
+            this.setState({
+                selectedEvent: null
+            })
+            return
+        }
+        const requestBody = {
+            query: `
+                    mutation {
+                        bookEvent(eventId: "${this.state.selectedEvent._id}") {
+                            _id
+                            createdAt
+                            updatedAt
+                        }
+                    }
+                `
+        }
+        const token = this.context.token;
+
+        fetch('http://localhost:3000/graphql', {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'bearer ' + token
+            }
+        })
+            .then(response => {
+                if (response.status !== 200 && response.status !== 201) {
+                    throw new Error('Failed!');
+                }
+                return response.json()
+            }).then(resData => {
+                console.log(resData);
+                this.setState({
+                    selectedEvent: null
+                })
+            }).catch(err => {
+                console.log(err);
+            })
+    }
+
+    componentWillUnmount() {
+        this.isActive = false;
 
     }
 
@@ -206,7 +255,7 @@ export class Events extends Component {
                 {this.state.selectedEvent && (
                     <React.Fragment>
                         <Backdrop />
-                        <Modal title={this.state.selectedEvent.title} confirmText="Book" canCancel canConfirm onCancel={this.modalCancelHandler} onConfirm={this.bookEventHandler}>
+                        <Modal title={this.state.selectedEvent.title} confirmText={this.context.token ? "Book" : "Confirm"} canCancel canConfirm onCancel={this.modalCancelHandler} onConfirm={this.bookEventHandler}>
                             <h1>{this.state.selectedEvent.title}</h1>
                             <h2>{this.state.selectedEvent.price} - {new Date(this.state.selectedEvent.date).toLocaleDateString()}</h2>
                             <p>{this.state.selectedEvent.description}</p>

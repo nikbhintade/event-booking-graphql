@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const { graphqlHTTP } = require('express-graphql');
 const mongoose = require('mongoose');
 
@@ -21,7 +20,7 @@ app.use((req, res, next) => {
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200);
     }
-    console.log(req)
+    // console.log(req)
     next();
 })
 app.use(isAuth);

@@ -4,7 +4,9 @@ const { transformBooking, transformEvent } = require('./merge');
 
 module.exports = { //resolver functions
     //resolvers & commands should have same name
-    bookings: async (req) => {
+    bookings: async (args, req) => {
+        console.log("request", req)
+        console.log('Authenticated', req.isAuth)
         if (!req.isAuth) {
             throw new Error('Your not authenticated')
         }
@@ -19,6 +21,7 @@ module.exports = { //resolver functions
     },
 
     bookEvent: async (args, req) => {
+        console.log('Authenticated', req.isAuth)
         if (!req.isAuth) {
             throw new Error('Your not authenticated')
         }
